@@ -79,24 +79,17 @@ var poke = function poke(d, i, pool, callback) {
   if (!_.isArray(d)) d = [d];
 
   try {
-    var _ret = (function() {
-      console.log('>> poke: ' + JSON.stringify(d) + '  ::  ' + JSON.stringify(i));
-      var ingestsAsYaml = yaml.safeDump({
-        descrips: d,
-        ingests: i
-      });
-      var p = spawn('poke', [pool]);
-      p.stdin.write(ingestsAsYaml);
-      p.on('exit', function(code) {
-        if (callback) callback();
-        p.stdin.end();
-      });
-      return {
-        v: true
-      };
-    })();
-
-    if (typeof _ret === 'object') return _ret.v;
+    console.log('>> poke: ' + JSON.stringify(d) + '  ::  ' + JSON.stringify(i));
+    var ingestsAsYaml = yaml.safeDump({
+      descrips: d,
+      ingests: i
+    });
+    var p = spawn('poke', [pool]);
+    p.stdin.write(ingestsAsYaml, 'utf8', function() {
+      p.stdin.end();
+      if (callback) callback();
+    });
+    return true;
   } catch (e) {
     console.log('Error when attempting poke: ' + JSON.stringify(e));
   }
