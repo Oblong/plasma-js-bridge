@@ -75,22 +75,23 @@ var peek = function peek(pool, callback) {
 // Deposit proteins into the named pool
 //  d: string or list of strings
 //  i: map
+// g-speak 3.19 and earlier: deposits which generate a protein above 16k fail
 var poke = function poke(d, i, pool, callback) {
   if (!_.isArray(d)) d = [d];
 
   try {
-    // console.log('>> poke: ' + JSON.stringify(d) + '  ::  ' + JSON.stringify(i));
     var p = spawn('poke', [pool]);
-    p.stdin.write(JSON.stringify({
+    var protein_text = JSON.stringify({
       descrips: d,
       ingests: i
-    }), 'utf8', function() {
+    });
+    p.stdin.write(protein_text, 'utf8', function() {
       p.stdin.end();
       if (callback) callback();
     });
     return true;
   } catch (e) {
-    console.log('Error when attempting poke: ' + JSON.stringify(e));
+    console.log('Error when attempting poke: ' + e.message);
   }
   return false;
 };
