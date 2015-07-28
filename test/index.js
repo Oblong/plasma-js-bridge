@@ -2,21 +2,21 @@
 
 'use strict';
 
-let chai = require('chai');
+var chai = require('chai');
 chai.use(require('chai-stats'));
-let assert = chai.assert;
-let plas = require('../index.js');
+var assert = chai.assert;
+var plas = require('../index.js');
 
-describe('poke()', () => {
+describe('poke()', function () {
 
-  it('pokes a protein', () => {
+  it('pokes a protein', function () {
     assert(plas.poke("first", {
       key: "val"
     }, "foo"), 'poke returned true')
   });
 
-  it('peeks it back in', () => {
-    plas.peek('foo', (p) => {
+  it('peeks it back in', function () {
+    plas.peek('foo', function (p) {
       assert(p.descrips == ["first"], 'descrips == ["first"]')
       assert(p.ingests == {key: "val"}, 'ingests == {key: "val"}')
       done()
