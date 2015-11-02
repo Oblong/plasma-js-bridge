@@ -11,6 +11,12 @@ var yaml = require('js-yaml'); // also tried: yaml-js and yaml.  This works.
 var spawn = require('child_process').spawn;
 var _ = require('underscore');
 
+var SlawYamlType = new yaml.Type('tag:oblong.com,2009:slaw/protein', {
+  loadKind: 'mapping'
+});
+
+var SLAW_SCHEMA = yaml.Schema.create([SlawYamlType]);
+
 var spawn_process = function spawn_process(cmd) {
   var cmdparts = cmd.split(' ');
   if (cmdparts.length <= 0) {
@@ -63,7 +69,7 @@ var peek = function peek(pool, callback) {
             console.log('ERROR: protein arrived without descrips or ingests: ');
             console.log(JSON.stringify(p));
           }
-        });
+        }, { schema: SLAW_SCHEMA });
       } catch (e) {
         console.log('Yaml error handling protein: ' + JSON.stringify(e));
       }
