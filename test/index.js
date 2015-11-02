@@ -16,11 +16,13 @@ describe('poke()', function () {
   });
 
   it('peeks it back in', function (done) {
-    plas.peek('foo', function (p) {
+    var child = plas.peek('foo', function (p) {
       assert.deepEqual(p.descrips, ["first"], 'descrips == ["first"]')
       assert.deepEqual(p.ingests, {key: "val"}, 'ingests == {key: "val"}')
       done()
     })
+
+    after(function() { child.kill(); });
 
     plas.poke("first", {
       key: "val"
