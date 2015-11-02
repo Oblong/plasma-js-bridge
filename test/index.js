@@ -15,12 +15,17 @@ describe('poke()', function () {
     }, "foo"), 'poke returned true')
   });
 
-  it('peeks it back in', function () {
-    plas.peek('foo', function (p) {
-      assert(p.descrips == ["first"], 'descrips == ["first"]')
-      assert(p.ingests == {key: "val"}, 'ingests == {key: "val"}')
+  it('peeks it back in', function (done) {
+    var child = plas.peek('bar', function (p) {
+      assert.deepEqual(p.descrips, ["first"], 'descrips == ["first"]')
+      assert.deepEqual(p.ingests, {key: "val"}, 'ingests == {key: "val"}')
       done()
     })
 
+    after(function() { child.kill(); });
+
+    plas.poke("first", {
+      key: "val"
+    }, "bar")
   })
 })
