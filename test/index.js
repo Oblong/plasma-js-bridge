@@ -15,12 +15,15 @@ describe('poke()', function () {
     }, "foo"), 'poke returned true')
   });
 
-  it('peeks it back in', function () {
+  it('peeks it back in', function (done) {
     plas.peek('foo', function (p) {
-      assert(p.descrips == ["first"], 'descrips == ["first"]')
-      assert(p.ingests == {key: "val"}, 'ingests == {key: "val"}')
+      assert.deepEqual(p.descrips, ["first"], 'descrips == ["first"]')
+      assert.deepEqual(p.ingests, {key: "val"}, 'ingests == {key: "val"}')
       done()
     })
 
+    plas.poke("first", {
+      key: "val"
+    }, "foo")
   })
 })
