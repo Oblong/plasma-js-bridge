@@ -56,23 +56,7 @@ var peek = function peek(pool, callback) {
 
     // the first n-1 proteins, which are intact, can be handled
     proteins.slice(0, -1).map(function(protein) {
-      try {
-
-        yaml.safeLoadAll(protein, function(p) {
-          if (p.descrips && p.ingests && p.descrips.length > 0) {
-            try {
-              callback(p);
-            } catch (e) {
-              console.log(e);
-            }
-          } else {
-            console.log('ERROR: protein arrived without descrips or ingests: ');
-            console.log(JSON.stringify(p));
-          }
-        }, { schema: SLAW_SCHEMA });
-      } catch (e) {
-        console.log('Yaml error handling protein: ' + JSON.stringify(e));
-      }
+      process_protein(protein, callback);
     });
   });
   return child;
@@ -102,5 +86,125 @@ var poke = function poke(d, i, pool, callback) {
   return false;
 };
 
+// Return the nth protein in the pool
+var nth = function nth(pool, index, callback) {
+  throw new Error('nth not implemented');
+
+  // this would be simple, except that p-nth spews the protein
+  // rather than providing it as YAML, and peek does not
+  // provide an nth option
+  var child = spawn_process('p-nth ' + pool + ' ' + index);
+  if (!child) return null;
+
+  child.stdout.setEncoding('utf8');
+  var buffer = '';
+  child.stdout.on('data', function(data) {
+    buffer += data;
+  });
+  child.stdout.on('end', function() {
+    process_protein(buffer, callback);
+  });
+  return child;
+};
+
+// Return the newest protein in the pool
+var newest = function newest(pool, callback) {
+  var child = spawn_process('peek -1 ' + pool);
+  if (!child) return null;
+
+  child.stdout.setEncoding('utf8');
+  var buffer = ''
+  child.stdout.on('data', function(data) {
+    buffer += data;
+  });
+  child.stdout.on('end', function() {
+    process_protein(buffer, callback);
+  });
+  return child;
+};
+
+// Return the oldest protein in the pool
+var oldest = function oldest(pool, callback) {
+  var child = spawn_process('peek --rewind --limit 1 ' + pool);
+  if (!child) return null;
+
+  child.stdout.setEncoding('utf8');
+  var buffer = ''
+  child.stdout.on('data', function(data) {
+    buffer += data;
+  });
+  child.stdout.on('end', function() {
+    process_protein(buffer, callback);
+  });
+  return child;
+};
+
+// Return the newest index in the pool
+//
+// Due to JavaScript's floating point number representation,
+// results are undefined for indices larger than (2^53-1)
+var newest_idx = function newest_idx(pool, callback) {
+  var child = spawn_process('p-newest-idx ' + pool);
+  if (!child) return null;
+
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', function(data) {
+    try {
+      callback(parseInt(data));
+    } catch (e) {
+      console.log(e);
+    }
+  });
+  return child;
+};
+
+// Return the oldest index in the pool
+//
+// Due to JavaScript's floating point number representation,
+// results are undefined for indices larger than (2^53-1)
+var oldest_idx = function oldest_idx(pool, callback) {
+  var child = spawn_process('p-oldest-idx ' + pool);
+  if (!child) return null;
+
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', function(data) {
+    try {
+      callback(parseInt(data));
+    } catch (e) {
+      console.log(e);
+    }
+  });
+  return child;
+};
+
+// Parse a protein
+//
+// Returns a bool to indicate whether parsing was successful
+var process_protein = function process_protein(protein, callback) {
+  try {
+    yaml.safeLoadAll(protein, function(protein) {
+      if (protein.descrips && protein.ingests && protein.descrips.length > 0) {
+        try {
+          callback(protein);
+        } catch (e) {
+          console.log(e);
+        }
+        return true;
+      } else {
+        console.log('ERROR: protein arrived without descrips or ingests: ');
+        console.log(JSON.stringify(protein));
+      }
+    }, { schema: SLAW_SCHEMA });
+  } catch (e) {
+    console.log('Yaml error handling protein: ' + JSON.stringify(e));
+  }
+  return false;
+}
+
 exports.poke = poke;
 exports.peek = peek;
+//exports.nth = nth;
+exports.newest = newest;
+exports.oldest = oldest;
+exports.oldestIndex = oldest_idx;
+exports.newestIndex = newest_idx;
