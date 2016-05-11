@@ -147,13 +147,15 @@ var newest_idx = function newest_idx(pool, callback) {
   var child = spawn_process('p-newest-idx ' + pool);
   if (!child) return null;
 
+  var index = -1;
   child.stdout.setEncoding('utf8');
   child.stdout.on('data', function(data) {
-    try {
-      callback(parseInt(data));
-    } catch (e) {
-      console.log(e);
-    }
+    index = parseInt(data);
+    if(index === undefined)
+      index = -1;
+  });
+  child.stdout.on('end', function() {
+    callback(index);
   });
   return child;
 };
@@ -166,13 +168,15 @@ var oldest_idx = function oldest_idx(pool, callback) {
   var child = spawn_process('p-oldest-idx ' + pool);
   if (!child) return null;
 
+  var index = -1;
   child.stdout.setEncoding('utf8');
   child.stdout.on('data', function(data) {
-    try {
-      callback(parseInt(data));
-    } catch (e) {
-      console.log(e);
-    }
+    index = parseInt(data);
+    if(index === undefined)
+      index = -1;
+  });
+  child.stdout.on('end', function() {
+    callback(index);
   });
   return child;
 };
@@ -198,6 +202,7 @@ var process_protein = function process_protein(protein, callback) {
   } catch (e) {
     console.log('Yaml error handling protein: ' + JSON.stringify(e));
   }
+  callback(null);
   return false;
 }
 
