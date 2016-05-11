@@ -93,6 +93,24 @@ describe('peek', function () {
     after(function() { child.kill(); });
   });
 
+  it('returns null for oldest when pool does not exist', function (done) {
+    var child = plas.oldest('fubar', function (p) {
+      assert.equal(p, null);
+      done();
+    });
+
+    after(function() { child.kill(); });
+  });
+
+  it('returns null for newest when pool does not exist', function (done) {
+    var child = plas.newest('fubar', function (p) {
+      assert.equal(p, null);
+      done();
+    });
+
+    after(function() { child.kill(); });
+  });
+
 });
 
 describe('indices', function () {
@@ -127,6 +145,24 @@ describe('indices', function () {
   it('identifies oldest index', function (done) {
     var child = plas.oldestIndex('baz', function (i) {
       assert.equal(i, 0);
+      done();
+    });
+
+    after(function() { child.kill(); });
+  });
+
+  it('returns -1 for newestIndex when pool does not exist', function (done) {
+    var child = plas.newestIndex('fubar', function (i) {
+      assert.equal(i, -1);
+      done();
+    });
+
+    after(function() { child.kill(); });
+  });
+
+  it('returns -1 for oldestIndex when pool does not exist', function (done) {
+    var child = plas.oldestIndex('fubar', function (i) {
+      assert.equal(i, -1);
       done();
     });
 
