@@ -185,6 +185,7 @@ var oldest_idx = function oldest_idx(pool, callback) {
 //
 // Returns a bool to indicate whether parsing was successful
 var process_protein = function process_protein(protein, callback) {
+  var callbackCalled = false;
   try {
     yaml.safeLoadAll(protein, function(protein) {
       if (protein.descrips && protein.ingests && protein.descrips.length > 0) {
@@ -193,7 +194,7 @@ var process_protein = function process_protein(protein, callback) {
         } catch (e) {
           console.log(e);
         }
-        return true;
+        callbackCalled = true;
       } else {
         console.log('ERROR: protein arrived without descrips or ingests: ');
         console.log(JSON.stringify(protein));
@@ -202,8 +203,10 @@ var process_protein = function process_protein(protein, callback) {
   } catch (e) {
     console.log('Yaml error handling protein: ' + JSON.stringify(e));
   }
-  callback(null);
-  return false;
+
+  if (!callbackCalled) {
+    callback(null);
+  }
 }
 
 exports.poke = poke;
