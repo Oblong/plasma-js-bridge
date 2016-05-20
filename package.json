@@ -1,6 +1,6 @@
 {
   "name": "plasma-js-bridge",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Uses YAML to bridge between node.js and Oblong plasma peek/poke",
   "main": "index.js",
   "scripts": {
