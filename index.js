@@ -9,7 +9,6 @@
 
 var yaml = require('js-yaml'); // also tried: yaml-js and yaml.  This works.
 var spawn = require('child_process').spawn;
-var _ = require('underscore');
 
 var SlawYamlType = new yaml.Type('tag:oblong.com,2009:slaw/protein', {
   loadKind: 'mapping'
@@ -67,7 +66,7 @@ var peek = function peek(pool, callback) {
 //  i: map
 // g-speak 3.19 and earlier: deposits which generate a protein above 16k fail
 var poke = function poke(d, i, pool, callback) {
-  if (!_.isArray(d)) d = [d];
+  if (!Array.isArray(d)) d = [d];
 
   try {
     var p = spawn('poke', [pool]);
