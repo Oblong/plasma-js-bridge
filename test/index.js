@@ -12,9 +12,7 @@ var promisify = require('bluebird').Promise.promisify;
 var empty_pool = promisify(function(pool, done) {
   if (!pool || pool === '') return;
   spawn('p-stop', [pool]).on('exit', function () {
-    console.log('p-stop done');
     spawn('p-create', [pool]).on('exit', function () {
-      console.log('p-create done');
       done();
     });
   });
