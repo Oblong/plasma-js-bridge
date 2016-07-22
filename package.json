@@ -9,9 +9,10 @@
   "author": "oblong industries",
   "license": "MIT",
   "dependencies": {
-    "js-yaml": "~3.0.2"
+    "js-yaml": "~3.6.0"
   },
   "devDependencies": {
+    "bluebird": "^3.4.1",
     "chai": "^2.3.0",
     "chai-stats": "^0.3.0",
     "mocha": "^2.2.4"
