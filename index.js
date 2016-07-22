@@ -16,13 +16,8 @@ var SlawYamlType = new yaml.Type('tag:oblong.com,2009:slaw/protein', {
 
 var SLAW_SCHEMA = yaml.Schema.create([SlawYamlType]);
 
-var spawn_process = function spawn_process(cmd) {
-  var cmdparts = cmd.split(' ');
-  if (cmdparts.length <= 0) {
-    return null;
-  }
-
-  var child = spawn(cmdparts[0], cmdparts.slice(1));
+var spawn_process = function spawn_process(cmd, args) {
+  var child = spawn(cmd, args);
 
   // When nodemon or other monitoring process restarts server process,
   // make sure we get rid of the child process so it doesn't become a zombie
@@ -39,7 +34,7 @@ var spawn_process = function spawn_process(cmd) {
 // - Calls back with one arg: p (JSON representation of a protein)
 // - call child.kill to stop the peek
 var peek = function peek(pool, callback) {
-  var child = spawn_process('peek ' + pool);
+  var child = spawn_process('peek', [pool]);
   if (!child) return null;
 
   child.stdout.setEncoding('utf8');
@@ -92,7 +87,7 @@ var nth = function nth(pool, index, callback) {
   // this would be simple, except that p-nth spews the protein
   // rather than providing it as YAML, and peek does not
   // provide an nth option
-  var child = spawn_process('p-nth ' + pool + ' ' + index);
+  var child = spawn_process('p-nth', [pool, index]);
   if (!child) return null;
 
   child.stdout.setEncoding('utf8');
@@ -108,7 +103,7 @@ var nth = function nth(pool, index, callback) {
 
 // Return the newest protein in the pool
 var newest = function newest(pool, callback) {
-  var child = spawn_process('peek -1 ' + pool);
+  var child = spawn_process('peek', ['-1', pool]);
   if (!child) return null;
 
   child.stdout.setEncoding('utf8');
@@ -124,7 +119,7 @@ var newest = function newest(pool, callback) {
 
 // Return the oldest protein in the pool
 var oldest = function oldest(pool, callback) {
-  var child = spawn_process('peek --rewind --limit 1 ' + pool);
+  var child = spawn_process('peek', ['--rewind', '--limit', '1', pool]);
   if (!child) return null;
 
   child.stdout.setEncoding('utf8');
@@ -143,7 +138,7 @@ var oldest = function oldest(pool, callback) {
 // Due to JavaScript's floating point number representation,
 // results are undefined for indices larger than (2^53-1)
 var newest_idx = function newest_idx(pool, callback) {
-  var child = spawn_process('p-newest-idx ' + pool);
+  var child = spawn_process('p-newest-idx', [pool]);
   if (!child) return null;
 
   var index = -1;
@@ -164,7 +159,7 @@ var newest_idx = function newest_idx(pool, callback) {
 // Due to JavaScript's floating point number representation,
 // results are undefined for indices larger than (2^53-1)
 var oldest_idx = function oldest_idx(pool, callback) {
-  var child = spawn_process('p-oldest-idx ' + pool);
+  var child = spawn_process('p-oldest-idx', [pool]);
   if (!child) return null;
 
   var index = -1;
