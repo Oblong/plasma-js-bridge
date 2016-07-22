@@ -9,7 +9,7 @@
   "author": "oblong industries",
   "license": "MIT",
   "dependencies": {
-    "js-yaml": "~3.0.2"
+    "js-yaml": "~3.6.0"
   },
   "devDependencies": {
     "bluebird": "^3.4.1",

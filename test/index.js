@@ -181,3 +181,26 @@ describe.skip('indices', function () {
     after(function() { child.kill(); });
   });
 });
+
+describe('custom types', function () {
+  // It would be nice to avoid the pool deposit/metabolize rigmarole - maybe
+  // splitting out a private module for the YAML encoding/decoding and testing
+  // that would be a good idae.
+  var Vect = plas.types.Vect;
+  var loc = new Vect([0.0, -1.0, 2.0]);
+
+  it('after poking a Vect, peeks back a Vect', function (done) {
+    var VECT_POOL = 'pjsb-vect';
+    empty_pool(VECT_POOL);
+    var pokeAsync = promisify(plas.poke);
+    pokeAsync(['loctest'], {loc: loc}, VECT_POOL)
+      .then(function () {
+        plas.oldest(VECT_POOL, function (protein) {
+          assert.deepEqual(protein.descrips, ['loctest']);
+          assert.instanceOf(protein.ingests['loc'], Vect);
+          assert.deepEqual(protein.ingests['loc'], loc);
+          done();
+        });
+      });
+  })
+});

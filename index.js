@@ -9,12 +9,27 @@
 
 var yaml = require('js-yaml'); // also tried: yaml-js and yaml.  This works.
 var spawn = require('child_process').spawn;
+var types = require('./types');
 
 var SlawYamlType = new yaml.Type('tag:oblong.com,2009:slaw/protein', {
-  loadKind: 'mapping'
+  kind: 'mapping'
 });
 
-var SLAW_SCHEMA = yaml.Schema.create([SlawYamlType]);
+var VectYamlType = new yaml.Type('tag:oblong.com,2009:slaw/vector', {
+  kind: 'sequence',
+  resolve: function (data) {
+    return data !== null && data.length === 3;
+  },
+  construct: function (data) {
+    return new types.Vect(data);
+  },
+  'instanceOf': types.Vect,
+  represent: function (vect) {
+    return vect.toArray();
+  }
+});
+
+var SLAW_SCHEMA = yaml.Schema.create([SlawYamlType, VectYamlType]);
 
 var spawn_process = function spawn_process(cmd, args) {
   var child = spawn(cmd, args);
@@ -65,10 +80,10 @@ var poke = function poke(d, i, pool, callback) {
 
   try {
     var p = spawn('poke', [pool]);
-    var protein_text = JSON.stringify({
+    var protein_text = yaml.safeDump({
       descrips: d,
       ingests: i
-    });
+    }, {schema: SLAW_SCHEMA});
     p.stdin.write(protein_text, 'utf8', function() {
       p.stdin.end();
       if (callback) callback();
@@ -212,3 +227,4 @@ exports.newest = newest;
 exports.oldest = oldest;
 exports.oldestIndex = oldest_idx;
 exports.newestIndex = newest_idx;
+exports.types = types;
