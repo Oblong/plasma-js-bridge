@@ -185,18 +185,27 @@ describe('custom types', function () {
   // splitting out a private module for the YAML encoding/decoding and testing
   // that would be a good idae.
   var Vect = plas.types.Vect;
-  var loc = new Vect([0.0, -1.0, 2.0]);
+  var v2 = new Vect([0.0, -1.0]);
+  var v3 = new Vect([0.0, -1.0, 2.0]);
+  var v4 = new Vect([0.0, -1.0, 2.0, 3.0]);
 
-  it('after poking a Vect, peeks back a Vect', function (done) {
+  it('after poking an n-Vect, peeks back an n-Vect', function (done) {
     var VECT_POOL = 'pjsb-vect';
     empty_pool(VECT_POOL);
     var pokeAsync = promisify(plas.poke);
-    pokeAsync(['loctest'], {loc: loc}, VECT_POOL)
+    pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, VECT_POOL)
       .then(function () {
         plas.oldest(VECT_POOL, function (protein) {
-          assert.deepEqual(protein.descrips, ['loctest']);
-          assert.instanceOf(protein.ingests['loc'], Vect);
-          assert.deepEqual(protein.ingests['loc'], loc);
+          assert.deepEqual(protein.descrips, ['vect-test']);
+
+          assert.instanceOf(protein.ingests['v2'], Vect);
+          assert.deepEqual(protein.ingests['v2'], v2);
+
+          assert.instanceOf(protein.ingests['v3'], Vect);
+          assert.deepEqual(protein.ingests['v3'], v3);
+
+          assert.instanceOf(protein.ingests['v4'], Vect);
+          assert.deepEqual(protein.ingests['v4'], v4);
           done();
         });
       });
