@@ -18,7 +18,7 @@ var SlawYamlType = new yaml.Type('tag:oblong.com,2009:slaw/protein', {
 var VectYamlType = new yaml.Type('tag:oblong.com,2009:slaw/vector', {
   kind: 'sequence',
   resolve: function (data) {
-    return data !== null && data.length === 3;
+    return data !== null && data.length >= 2 && data.length <= 4;
   },
   construct: function (data) {
     return new types.Vect(data);
