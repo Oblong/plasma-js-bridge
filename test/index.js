@@ -189,11 +189,13 @@ describe('custom types', function () {
   var v3 = new Vect([0.0, -1.0, 2.0]);
   var v4 = new Vect([0.0, -1.0, 2.0, 3.0]);
 
+  var VECT_POOL = 'pjsb-vect';
+
   it('after poking an n-Vect, peeks back an n-Vect', function (done) {
-    var VECT_POOL = 'pjsb-vect';
-    empty_pool(VECT_POOL);
-    var pokeAsync = promisify(plas.poke);
-    pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, VECT_POOL)
+    empty_pool(VECT_POOL)
+      .then (function () {
+        return pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, VECT_POOL);
+      })
       .then(function () {
         plas.oldest(VECT_POOL, function (protein) {
           assert.deepEqual(protein.descrips, ['vect-test']);
@@ -206,6 +208,34 @@ describe('custom types', function () {
 
           assert.instanceOf(protein.ingests['v4'], Vect);
           assert.deepEqual(protein.ingests['v4'], v4);
+          done();
+        });
+      });
+  })
+
+  it('array-style accessors are provided for backwards compat.', function (done) {
+    empty_pool(VECT_POOL)
+      .then (function () {
+        return pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, VECT_POOL);
+      })
+      .then(function () {
+        plas.oldest(VECT_POOL, function (protein) {
+          assert.deepEqual(protein.descrips, ['vect-test']);
+
+          assert.instanceOf(protein.ingests['v2'], Vect);
+          assert.equal(protein.ingests['v2'][0], v2.x);
+          assert.equal(protein.ingests['v2'][1], v2.y);
+
+          assert.instanceOf(protein.ingests['v3'], Vect);
+          assert.equal(protein.ingests['v3'][0], v3.x);
+          assert.equal(protein.ingests['v3'][1], v3.y);
+          assert.equal(protein.ingests['v3'][2], v3.z);
+
+          assert.instanceOf(protein.ingests['v4'], Vect);
+          assert.equal(protein.ingests['v4'][0], v4.x);
+          assert.equal(protein.ingests['v4'][1], v4.y);
+          assert.equal(protein.ingests['v4'][2], v4.z);
+          assert.equal(protein.ingests['v4'][3], v4.w);
           done();
         });
       });
