@@ -188,16 +188,18 @@ describe('custom types', function () {
   var v2 = new Vect([0.0, -1.0]);
   var v3 = new Vect([0.0, -1.0, 2.0]);
   var v4 = new Vect([0.0, -1.0, 2.0, 3.0]);
+  var Arr = plas.types.Array;
+  var a1 = new Arr([0.0, -1.0]);
 
-  var VECT_POOL = 'pjsb-vect';
+  var TYPES_POOL = 'pjsb-vect';
 
   it('after poking an n-Vect, peeks back an n-Vect', function (done) {
-    empty_pool(VECT_POOL)
+    empty_pool(TYPES_POOL)
       .then (function () {
-        return pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, VECT_POOL);
+        return pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, TYPES_POOL);
       })
       .then(function () {
-        plas.oldest(VECT_POOL, function (protein) {
+        plas.oldest(TYPES_POOL, function (protein) {
           assert.deepEqual(protein.descrips, ['vect-test']);
 
           assert.instanceOf(protein.ingests['v2'], Vect);
@@ -214,12 +216,12 @@ describe('custom types', function () {
   })
 
   it('array-style accessors are provided for backwards compat.', function (done) {
-    empty_pool(VECT_POOL)
+    empty_pool(TYPES_POOL)
       .then (function () {
-        return pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, VECT_POOL);
+        return pokeAsync(['vect-test'], {v2: v2, v3: v3, v4: v4}, TYPES_POOL);
       })
       .then(function () {
-        plas.oldest(VECT_POOL, function (protein) {
+        plas.oldest(TYPES_POOL, function (protein) {
           assert.deepEqual(protein.descrips, ['vect-test']);
 
           assert.instanceOf(protein.ingests['v2'], Vect);
@@ -236,6 +238,22 @@ describe('custom types', function () {
           assert.equal(protein.ingests['v4'][1], v4.y);
           assert.equal(protein.ingests['v4'][2], v4.z);
           assert.equal(protein.ingests['v4'][3], v4.w);
+          done();
+        });
+      });
+  })
+
+  it('after poking a SlawArray, peeks back a SlawArray', function (done) {
+    empty_pool(TYPES_POOL)
+      .then (function () {
+        return pokeAsync(['array-test'], {'slawArray': a1}, TYPES_POOL);
+      })
+      .then(function () {
+        plas.oldest(TYPES_POOL, function (protein) {
+          assert.deepEqual(protein.descrips, ['array-test']);
+
+          assert.instanceOf(protein.ingests['slawArray'], Arr);
+          assert.deepEqual(protein.ingests['slawArray'], a1);
           done();
         });
       });
