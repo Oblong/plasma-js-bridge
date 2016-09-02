@@ -36,4 +36,13 @@ Vect.prototype.toArray = function toArray() {
     return [this.x, this.y];
 };
 
+function SlawArray(arr) {
+  this._arr = arr || [];
+}
+
+SlawArray.prototype.toArray = function toArray() {
+  return this._arr.slice();
+}
+
 exports.Vect = Vect;
+exports.Array = SlawArray;

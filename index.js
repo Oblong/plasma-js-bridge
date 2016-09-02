@@ -29,7 +29,21 @@ var VectYamlType = new yaml.Type('tag:oblong.com,2009:slaw/vector', {
   }
 });
 
-var SLAW_SCHEMA = yaml.Schema.create([SlawYamlType, VectYamlType]);
+var ArrayYamlType = new yaml.Type('tag:oblong.com,2009:slaw/array', {
+  kind: 'sequence',
+  resolve: function (data) {
+    return Array.isArray(data);
+  },
+  construct: function (data) {
+    return new types.Array(data);
+  },
+  'instanceOf': types.Array,
+  represent: function (array) {
+    return array.toArray();
+  }
+});
+
+var SLAW_SCHEMA = yaml.Schema.create([SlawYamlType, VectYamlType, ArrayYamlType]);
 
 var spawn_process = function spawn_process(cmd, args) {
   var child = spawn(cmd, args);
