@@ -1,5 +1,13 @@
 # plasma-js-bridge
 
+
+---
+
+*NOTE: this project is deprecated.  Please use https://github.com/Oblong/gelatin instead*
+
+---
+
+
 Uses YAML to bridge between node.js and Oblong plasma peek/poke
 
 
