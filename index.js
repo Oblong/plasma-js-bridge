@@ -130,6 +130,31 @@ var nth = function nth(pool, index, callback) {
   return child;
 };
 
+// Peek from the nth index in the pool
+// available since g-speak 4.5
+let peek_nth = function peek_nth(pool, index, callback) {
+  let child = spawn_process('peek', ['--seekto-index', index, pool]);
+  if (!child) return null;
+
+  child.stdout.setEncoding('utf8');
+  let buffer = '';
+  child.stdout.on('data', function(data) {
+    buffer += data;
+    let proteins = buffer.split('\n...\n');
+
+    // buffer keeps last piece, which is usually empty if protein ends in ...
+    // if it doesn't end in ..., then it's a partial protein, and buffer
+    // will keep the partial until more data arrives
+    buffer = proteins[proteins.length - 1];
+
+    // the first n-1 proteins, which are intact, can be handled
+    proteins.slice(0, -1).map(function(protein) {
+      process_protein(protein, callback);
+    });
+  });
+  return child;
+};
+
 // Return the newest protein in the pool
 var newest = function newest(pool, callback) {
   var child = spawn_process('peek', ['-1', pool]);
@@ -237,6 +262,7 @@ var process_protein = function process_protein(protein, callback) {
 exports.poke = poke;
 exports.peek = peek;
 //exports.nth = nth;
+exports.peekNth = peek_nth;
 exports.newest = newest;
 exports.oldest = oldest;
 exports.oldestIndex = oldest_idx;
